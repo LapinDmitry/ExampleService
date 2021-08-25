@@ -1,0 +1,17 @@
+PUT http://127.0.0.1:8081/service-example/v1/user/74
+{
+    "id": "1",
+    "name": "Человек2",
+    "age": 8,
+    "userType": "CUSTOMER_USER_TYPE",
+    "items": [
+        {
+            "id": "1",
+            "name": "Зеркало"
+        },
+        {
+            "id": "2",
+            "name": "Ножницы"
+        }
+    ]
+}

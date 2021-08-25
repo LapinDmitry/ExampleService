@@ -1,0 +1,6 @@
+POST http://127.0.0.1:8081/service-example/v1/item
+
+{
+    "user_id": "1",
+    "name": "Ложка"
+},

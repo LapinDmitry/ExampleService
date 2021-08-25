@@ -3,33 +3,31 @@ package main
 import (
 	"context"
 	"crud-grpc-server/internal/handlers"
+	"crud-grpc-server/internal/utils"
 	"flag"
-	"github.com/golang/glog"
+	"fmt"
 	"net"
 
-	gen "crud-grpc-server/third_party/grpcGenerate"
+	gen "crud-grpc-server/third_party/grpcGenerated"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 
 	"net/http"
 )
 
-var (
-	// command-line options:
-	// gRPC server endpoint
-	grpcServerEndpoint = flag.String("grpc-server-endpoint", "localhost:9090", "gRPC server endpoint")
-)
+var hand *handlers.Handlers
 
-func startGrpc() {
-	println("start grpc")
+func startGrpc(handlers gen.ServiceExampleServer) {
+
+	port := utils.GetEnv("EXAMPLE_SERVER_GRPC_PORT", "9090").(string)
 
 	server := grpc.NewServer()
-	//handlers := &handlers.Handlers{}
-	gen.RegisterServiceExampleServiceServer(server, &handlers.Handlers{})
+	gen.RegisterServiceExampleServer(server, handlers)
 
 	for {
-		println("grpc listen")
-		list, err := net.Listen("tcp", ":9090")
+		fmt.Printf("Server grpc started listening... (port:%s)\n", port)
+
+		list, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 		if err != nil {
 			println(err)
 			continue
@@ -43,32 +41,41 @@ func startGrpc() {
 	}
 }
 
-func run() error {
+func startRestAdapter() error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	// Register gRPC server endpoint
-	// Note: Make sure the gRPC server is running properly and accessible
+	port := utils.GetEnv("EXAMPLE_SERVER_HTTP_PORT", "8081").(string)
+	portGRPC := utils.GetEnv("EXAMPLE_SERVER_HTTP_PORT", "9090").(string)
+	grpcEndpoint := fmt.Sprintf("localhost:%s", portGRPC)
+
+	grpcServerEndpoint := flag.String("grpc-server-endpoint", grpcEndpoint, "gRPC server endpoint")
+
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
-	err := gen.RegisterServiceExampleServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts)
+	err := gen.RegisterServiceExampleHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts)
 	if err != nil {
 		return err
 	}
 
-	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	return http.ListenAndServe(":8081", mux)
+	fmt.Printf("Server http started listening... (port:%s)\n", port)
+
+	return http.ListenAndServe(fmt.Sprintf(":%s", port), mux)
 }
 
 func main() {
-	println("start")
-	flag.Parse()
-	defer glog.Flush()
 
-	go startGrpc()
+	handler, err := handlers.Start()
+	if err != nil {
+		fmt.Printf("EXIT! Error starting the handler. Err(%v)\n", err)
+		return
+	}
 
-	if err := run(); err != nil {
-		glog.Fatal(err)
+	go startGrpc(handler)
+
+	if err := startRestAdapter(); err != nil {
+		fmt.Printf("EXIT! Error starting the rest adapter. Err(%v)\n", err)
+		return
 	}
 }

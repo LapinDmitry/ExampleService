@@ -1,0 +1,14 @@
+POST http://127.0.0.1:8081/service-example/v1/user
+{
+    "name": "Человек1",
+    "age": 30,
+    "userType": "CUSTOMER_USER_TYPE",
+    "items": [
+        {
+            "name": "Стол"
+        },
+        {
+            "name": "Стул"
+        }
+    ]
+}
