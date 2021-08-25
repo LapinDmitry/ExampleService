@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"crud-grpc-server/internal/handlers"
-	"crud-grpc-server/internal/utils"
 	"flag"
 	"fmt"
+	"github.com/LapinDmitry/ExampleService/internal/handlers"
+	"github.com/LapinDmitry/ExampleService/internal/utils"
 	"net"
 
-	gen "crud-grpc-server/third_party/grpcGenerated"
+	gen "github.com/LapinDmitry/ExampleService/third_party/grpcGenerated"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 

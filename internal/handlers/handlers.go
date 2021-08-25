@@ -6,10 +6,10 @@ package handlers
 
 import (
 	"context"
-	storage "crud-grpc-server/internal/store"
-	"crud-grpc-server/internal/utils"
-	gen "crud-grpc-server/third_party/grpcGenerated"
 	"fmt"
+	storage "github.com/LapinDmitry/ExampleService/internal/store"
+	"github.com/LapinDmitry/ExampleService/internal/utils"
+	gen "github.com/LapinDmitry/ExampleService/third_party/grpcGenerated"
 )
 
 // Handlers Обработчик grpc запросов

@@ -1,9 +1,9 @@
 package store
 
 import (
-	req "crud-grpc-server/internal/store/sqlRequests"
-	gen "crud-grpc-server/third_party/grpcGenerated"
 	"fmt"
+	req "github.com/LapinDmitry/ExampleService/internal/store/sqlRequests"
+	gen "github.com/LapinDmitry/ExampleService/third_party/grpcGenerated"
 	"strconv"
 	"time"
 )
